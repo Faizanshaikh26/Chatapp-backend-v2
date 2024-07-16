@@ -24,9 +24,6 @@
 //   api_secret: process.env.API_SECRET,
 // });
 
-
-
-
 // app.use(express.json());
 // app.use(cookieParser());
 // app.use(cors(corsOptions));
@@ -41,7 +38,6 @@
 // app.listen(port, () => {
 //   console.log(`Server is running on port ${port}`);
 // });
-
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -70,20 +66,25 @@ const { corsOptions } = require("./constant/config");
 const connectDB = require("./db/connection");
 const port = process.env.PORT || 3000;
 
-
 dotenv.config({ path: "./.env" });
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
-  cors: corsOptions,
+  cors: {
+    origin: [
+      "https://chatapp-frontend-rose-six.vercel.app",
+      "http://localhost:5173",
+      process.env.ORIGIN,
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  },
 });
 app.set("io", io);
 
 const userSocketId = new Map();
 const onlineUsers = new Set();
-
-
 
 connectDB();
 
@@ -95,7 +96,17 @@ cloudinary.config({
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: [
+      "https://chatapp-frontend-rose-six.vercel.app",
+      "http://localhost:5173",
+      process.env.ORIGIN,
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/admin", adminRoute);
