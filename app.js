@@ -75,6 +75,7 @@ const io = new Server(server, {
     origin: [
       "https://chatapp-frontend-rose-six.vercel.app",
       "http://localhost:5173",
+      "https://chatapp-v2-cyan.vercel.app",
       process.env.ORIGIN,
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
