@@ -13,9 +13,7 @@ exports.isAuthenticated = async (req, res, next) => {
     }
 
     const decodedData = jwt.verify(token, process.env.JWT_SECRET || 'Secret-key');
-    if (!decodedData || !decodedData.user || !decodedData.user.id) {
-      return res.status(401).json({ success: false, message: 'Invalid token' });
-    }
+  
 
     req.user = decodedData.user.id;
     next();
@@ -54,76 +52,35 @@ exports.isadmin = async (req, res, next) => {
 };
 
 
-// exports.socketAuthenticator = async (err, socket, next) => {
-//   try {
-//     if (err) return next(err);
-
-//     const authToken = socket.request.cookies['token'];
-
-//     if (!authToken) {
-//       const error = new Error("Please login to access this route");
-//       error.status = 401;  // Attach status code to error object
-//       return next(error);
-//     }
-
-//     const decodedData = jwt.verify(authToken, process.env.JWT_SECRET);
-
-//     const user = await User.findById(decodedData.user.id);
-
-//     if (!user) {
-//       const error = new Error("Please login to access this route");
-//       error.status = 401;  // Attach status code to error object
-//       return next(error);
-//     }
-
-//     socket.user = user;
-
-//     return next();
-//   } catch (error) {
-//     console.log(error);
-//     const authError = new Error("Please login to access this route");
-//     authError.status = 401;  // Attach status code to error object
-//     return next(authError);
-//   }
-// };
-
 exports.socketAuthenticator = async (err, socket, next) => {
   try {
-    if (err) {
-      console.error("Socket.IO Error: ", err);
-      return next(err);
-    }
+    if (err) return next(err);
 
     const authToken = socket.request.cookies['token'];
+
     if (!authToken) {
-      console.error("No auth token found in cookies");
-      const error = new Error("Please login to faizaj");
-      error.status = 401;
+      const error = new Error("Please login to access this route");
+      error.status = 401;  // Attach status code to error object
       return next(error);
     }
 
     const decodedData = jwt.verify(authToken, process.env.JWT_SECRET);
-    if (!decodedData || !decodedData.user || !decodedData.user.id) {
-      console.error("Invalid token data");
-      const error = new Error("Please login to access this route");
-      error.status = 401;
-      return next(error);
-    }
 
     const user = await User.findById(decodedData.user.id);
+
     if (!user) {
-      console.error("User not found");
       const error = new Error("Please login to access this route");
-      error.status = 401;
+      error.status = 401;  // Attach status code to error object
       return next(error);
     }
 
     socket.user = user;
+
     return next();
   } catch (error) {
-    console.error("Authentication error: ", error);
+    console.log(error);
     const authError = new Error("Please login to access this route");
-    authError.status = 401;
+    authError.status = 401;  // Attach status code to error object
     return next(authError);
   }
 };
