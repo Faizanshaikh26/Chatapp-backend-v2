@@ -152,6 +152,7 @@ app.use(
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
+    allowedHeaders: ["Authorization", "Content-Type"]
   })
 );
 app.use("/api/v1/user", userRoute);
